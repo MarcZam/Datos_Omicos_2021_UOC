@@ -1,0 +1,34 @@
+---
+title: "Debate_01"
+author: "Marcos Zamora Amengual"
+date: "7/3/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Parte 1 - BIO
+
+## Título del estudio:
+
+A genome-wide survey of interaction between rice and Magnaporthe oryzae via microarray analysis 
+
+## Tipo de microarrays:
+
+Para el estudio utilizaron chips para mRNA de 4x44K Oligo Rice Microarray con 42,489 sondas para oligonucleótidos 60-meros.
+Se utilizaron 24 microarrays de un solo colorante con 3 réplicas independientes para cada uno de los grupos del experimento
+Número de muestras y grupos:
+El estudio se realizó con 16 muestras de hojas obtenidas de plantas de arroz crecidas en el laboratorio a partir de semillas de Oryza sativa Nipponbare de la cepa 007.
+Estas muestras se dividieron en 3 grupos dependiendo de el momento de infección de la planta con Magnaporthe oryzae; a las 24, 48 y 72 horas tras la inoculación del hongo en la planta
+Pregunta principal:
+Estudiar si hay respuesta en la expresión génica frente a la infección por Magnaporthe oryzae y en caso de que la haya que genes son los que modifican su expresión
+
+## Enlace:
+
+https://doi.org/10.1080/21655979.2020.1860479
+
+## Comentarios:
+
+Lo que me parece interesante de este estudio aparte de su relevancia social, ya que el arroz es una fuente de alimento vital para muchas comunidades humanas, es el hecho de que los 3 grupos del estudio son muy claros y que los resultados obtenidos muestran muy bien las diferencias entre ellos, lo que sirve de ejemplo, muy visual y claro, de lo que es un estudio con microarrays del tipo “class comparison”

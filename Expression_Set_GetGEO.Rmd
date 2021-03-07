@@ -42,7 +42,7 @@ round(apply(x,2, summary),3)# we show some basic statistics of our data rounded 
 boxplot(x, main = "Expression values for 5 Turner and 5 Control samples", xlab = "Slides", ylab = "Expression", col = rep(c("red", "green"),each=5))# we show a boxplot to verify symmetry of results
 ```
 
-**Finally we **
+**Finally we do a Principal Components Analysis of our 2 groups of data; Turner and Control groups. We also do a clustering of our data. We can observe in both of these representations that the differences between groups in out data are not very clear**
 
 ```{r}
 pcX <-prcomp(t(x), scale=TRUE) 
@@ -58,12 +58,16 @@ title("Principal components (PCA)")
 text(pcX$x[,1],pcX$x[,2],colnames(x), pos=4)
 
 clust.euclid.average <- hclust(dist(t(x)),method="ward.D2")
-plot(clust.euclid.average, hang=-1)
+plot(clust.euclid.average, hang=-1)# we plot a clustering of the distance between our data
+```
 
-# Part 2 Bioconductor
+# PART 02 - Bioconductor
 
+```{r, include=FALSE}
 require(Biobase)
+```
 
+```{r}
 expressionValues <- matrix(rnorm (300), nrow=30)
 colnames(expressionValues) <- paste0("sample",1:10)
 head(expressionValues)
@@ -80,6 +84,5 @@ myGenes <-  paste0("gene",1:30)
 pcs <- prcomp(expressionValues)
 names(pcs)
 barplot(pcs$sdev)
-
 ```
 

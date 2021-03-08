@@ -7,7 +7,11 @@ output: html_document
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+
+setwd("D:/Docs/Masteres/Master en Bioinformática y Bioestadística/Tercer Semestre/M0.157 - Análisis de datos ómicos/Moudlo02/Debate")
+
 library(Biobase)
+library(GEOquery)
 ```
 
 -----------
@@ -25,6 +29,7 @@ library(Biobase)
 2. [INFO](#Info)
     1. [Expression Set](#Expression)
     2. [GEOquery](#Geo)
+3. [DISEÑO DE EXPERIMENTOS](#Diseño)
 
 
 -----------
@@ -165,4 +170,24 @@ youngExpSet <- myExpSet[,pData(myExpSet)$age<50]
 head(pData(youngExpSet))
 ```
 
-### GEOquery Set<a name="Geo"></a>
+### GEOquery<a name="Geo"></a>
+
+Podemos introducir los datos desde GEO y almacenarlos en un objeto de clase Expression Set de manera sencilla y sin tener que crear el objeto desde 0
+Por problemas con el programa R ya que no conseguía cargar los archivos de GEOquery probablemento por su elevado tamaño no he continuado esta parte
+
+```{r}
+# gse <- getGEO("GSE58435")
+# gse[[1]]
+# expSetGEO <- gse[[1]]
+
+# expSetGEO <- getGEO(filename = "GSE58435.txt", GSEMatrix = TRUE)
+```
+
+# Parte 3 - Diseño de Experimentos<a name="Diseño"></a>
+
+El experimento en el que trato en la parte 1 de este informe se trata de un estudio que compara la expresión génica de unas hojas en 3 momentos distintos durante la infección por parte de un patógeno. Por ello el estudio lo que realiza es una comparación de grupos (*class comparison*) entre los distintos estadios de infección.
+
+En cuanto a los pasos a seguir para la buena praxis en el Diseño de Experimentos; los puntos más importantes y cruciales son la Replicación de nuestros datos para tener un experimento que sea estadisticamente representativo y fiable y la Aleatorización de los grupos para minimizar el efecto de variables independientes en nuestros resultados.
+Esto se puede afinar utilizando métodos estadísticos como por ejemplo calculando el Poder de nuestro experimento para poder calcular el número de muestras a la hora de hacer el experimento.
+
+El Poder de nuestro experimento se puede calcular utilizando paquetes de R como el paquete **pwr** con el cual se puede calcular el poder de un experimento introduciendo el tamaño del efecto, de la muestra y la significancia

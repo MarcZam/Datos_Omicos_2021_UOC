@@ -11,7 +11,7 @@
 
 <meta name="author" content="Marcos Zamora Amengual" />
 
-<meta name="date" content="2021-03-07" />
+<meta name="date" content="2021-03-08" />
 
 <title>Debate_01</title>
 
@@ -167,7 +167,7 @@ pre code {
 
 <h1 class="title toc-ignore">Debate_01</h1>
 <h4 class="author">Marcos Zamora Amengual</h4>
-<h4 class="date">2021-03-07</h4>
+<h4 class="date">2021-03-08</h4>
 
 </div>
 
@@ -185,7 +185,11 @@ pre code {
 <li><a href="#Enlace">Enlace</a></li>
 <li><a href="#Coment">Comentarios</a></li>
 </ol></li>
-<li><a href="#Info">INFO</a></li>
+<li><a href="#Info">INFO</a>
+<ol style="list-style-type: decimal">
+<li><a href="#Expression">Expression Set</a></li>
+<li><a href="#Geo">GEOquery</a></li>
+</ol></li>
 </ol>
 <hr />
 </div>
@@ -222,6 +226,148 @@ Lo que me parece interesante de este estudio aparte de su relevancia social, ya 
 </div>
 <div id="parte-2---info" class="section level1">
 <h1>Parte 2 - INFO<a name="Info"></a></h1>
+<div id="expression-set" class="section level3">
+<h3>Expression Set<a name="Expression"></a></h3>
+<p>La clase <strong>Expression Set</strong> del paquete Biobase utiliza la programación orientada a objetos para procesar de manera más eficiente los datos obtenidos en estudios de microarrays. La clase Expression Set divide estos datos en distintas porciones de pendiendo del tipo de datos:</p>
+<ul>
+<li><p><strong>assayData</strong>: datos de expression de los experimentos de microarrays(datos obtenidos como resultado del experimento)</p></li>
+<li><p><strong>phenoData</strong>: meta datos que describen las muestras usadas en el experimento</p></li>
+<li><p><strong>featureData</strong>: datos sobre el chip y la tecnología usada en el experimento</p></li>
+<li><p><strong>protocolData</strong>: datos sobre el protocolo usado para el procesado de cada muestra</p></li>
+<li><p><strong>experimentData</strong>: datos flexibles para describir el experimento</p></li>
+</ul>
+<p>Vamos a crear abajo un objeto de clase Expression Set a partir de datos que nos vamos a inventar<br />
+Para esto vamos a generar 3 tipos de información:</p>
+<ul>
+<li><strong>expressionValues</strong>: Datos de expresión de los microarrrays</li>
+</ul>
+<pre class="r"><code>expressionValues &lt;- matrix(rnorm(100), nrow = 10)
+colnames(expressionValues) &lt;- paste0(&quot;sample&quot;,1:10)
+# generamos la información aleatoria sobre los resultados de nuestro experimento de microarrays
+
+head(expressionValues)</code></pre>
+<pre><code>##           sample1    sample2    sample3    sample4    sample5    sample6
+## [1,] -1.458054640 -1.1658535 -0.2973212  1.1100484 -1.2896160  2.6203714
+## [2,]  1.380189348  0.9390002 -1.7653239 -0.9124022  1.1593635  0.5799894
+## [3,] -1.354205081  1.5179739 -1.0443814 -1.9612519  0.7599600  0.3401268
+## [4,]  0.585986875 -0.4055784 -1.6730366  2.0163753  1.0388785  0.7286612
+## [5,]  0.008001853 -0.6981776 -0.2948607  0.6560679  0.2666756  1.3120112
+## [6,]  0.699820393  1.6057666  0.3894675  3.0597512  1.0106115 -1.1638363
+##          sample7     sample8    sample9   sample10
+## [1,] -0.48105680 -0.15905729  0.7945471 -1.1308285
+## [2,]  0.09038907  0.37238038  0.9054932  0.1193907
+## [3,]  1.30927289 -0.08635859 -0.3467770 -1.1463393
+## [4,] -1.14546543  2.14754735 -2.3137734  0.5653908
+## [5,]  1.21896758  0.95119336 -1.4548231 -0.3718491
+## [6,] -1.29639449  0.96056195  0.5088925 -0.8112254</code></pre>
+<ul>
+<li><strong>Covariates</strong>: Datos sobre las muestras usadas en el experimento como la edad de los pacientes o el tratamiento que reciben</li>
+</ul>
+<pre class="r"><code>Covariates &lt;- data.frame(sampleNames = paste0(&quot;sample&quot;,1:10),
+                      group=c(paste0(&quot;Treatment&quot;,1:5),paste0(&quot;Control&quot;,1:5)),
+                      age = rpois(10, 50), 
+                      sex=as.factor(sample(c(&quot;Male&quot;, &quot;Female&quot;),10,replace=TRUE)),
+                      row.names=1)
+# generamos la información sobre nuestras muestras
+
+head(Covariates, n=10)</code></pre>
+<pre><code>##               group age    sex
+## sample1  Treatment1  59 Female
+## sample2  Treatment2  42 Female
+## sample3  Treatment3  49   Male
+## sample4  Treatment4  48 Female
+## sample5  Treatment5  59 Female
+## sample6    Control1  63 Female
+## sample7    Control2  49 Female
+## sample8    Control3  53 Female
+## sample9    Control4  62 Female
+## sample10   Control5  44 Female</code></pre>
+<ul>
+<li><strong>ExpInfo</strong>: Información sobre el experimento que se ha realizado</li>
+</ul>
+<pre class="r"><code>ExpInfo=list(name=&quot;Marcos Zamora&quot;, lab=&quot;UOC WorkFromHome&quot;,
+          contact=&quot;myemail@somegoogle3rdparty.domain&quot;, abstract=&quot;Generating ExpressionSet objects&quot;)
+# generamos la información sobre nuestro experimento
+
+show(ExpInfo)</code></pre>
+<pre><code>## $name
+## [1] &quot;Marcos Zamora&quot;
+## 
+## $lab
+## [1] &quot;UOC WorkFromHome&quot;
+## 
+## $contact
+## [1] &quot;myemail@somegoogle3rdparty.domain&quot;
+## 
+## $abstract
+## [1] &quot;Generating ExpressionSet objects&quot;</code></pre>
+<p>Una vez hemos generado toda nuestra información podemos crear un objeto de clase ExpressionSet a partir de ella. Primero vamos a añadir los resultados del estudio de microarrays</p>
+<pre class="r"><code>myExpSet &lt;- ExpressionSet(expressionValues)</code></pre>
+<p>En segundo lugar vamos a añadir la información de las muestras que hemos guardado en Covariates</p>
+<pre class="r"><code>columnDesc &lt;-  data.frame(labelDescription= c(&quot;Treatment/Control&quot;, 
+                                                &quot;Age at disease onset&quot;, 
+                                                &quot;Sex of patient (Male/Female&quot;))
+myAnnotDF &lt;- new(&quot;AnnotatedDataFrame&quot;, data=Covariates, varMetadata= columnDesc)
+# en primer lugar generamos un annotated data frame con explicaciones más claras de cada una de las columnas y con
+# los datos de Covariates
+
+myExpSet &lt;- ExpressionSet(assayData = expressionValues, phenoData = myAnnotDF)</code></pre>
+<p>Podemos tambien añadir la información sobre los genes estudiados en forma de vector con una longitud igual a las filas de nuestra assayData y la información adicional sobre nuestro experimento</p>
+<pre class="r"><code>myGenes &lt;- paste0(&quot;Gene&quot;,10:20)
+
+myDesc &lt;- new(&quot;MIAME&quot;, name= ExpInfo[[&quot;name&quot;]],
+            lab= ExpInfo[[&quot;lab&quot;]],
+            contact= ExpInfo[[&quot;contact&quot;]] ,
+            abstract= ExpInfo[[&quot;abstract&quot;]])
+
+myExpSet &lt;- ExpressionSet(assayData=expressionValues,
+                        phenoData=myAnnotDF,
+                        fetureNames =myGenes,
+                        experimentData = myDesc)
+
+show(myExpSet)</code></pre>
+<pre><code>## ExpressionSet (storageMode: lockedEnvironment)
+## assayData: 10 features, 10 samples 
+##   element names: exprs 
+## protocolData: none
+## phenoData
+##   sampleNames: sample1 sample2 ... sample10 (10 total)
+##   varLabels: group age sex
+##   varMetadata: labelDescription
+## featureData: none
+## experimentData: use &#39;experimentData(object)&#39;
+## Annotation:</code></pre>
+<p>Manipulando un objeto de clase ExpresionSet mediante los comandos <strong>exprs()</strong> con el que se accede a la parte de assayData del Expression Set y el comando <strong>pData</strong> con el que se accede a la parte de phenoData</p>
+<pre class="r"><code>all(colnames(exprs(myExpSet))==rownames(pData(myExpSet)))</code></pre>
+<pre><code>## [1] TRUE</code></pre>
+<pre class="r"><code>dim(exprs(myExpSet))</code></pre>
+<pre><code>## [1] 10 10</code></pre>
+<pre class="r"><code>head(pData(myExpSet), 10)</code></pre>
+<pre><code>##               group age    sex
+## sample1  Treatment1  59 Female
+## sample2  Treatment2  42 Female
+## sample3  Treatment3  49   Male
+## sample4  Treatment4  48 Female
+## sample5  Treatment5  59 Female
+## sample6    Control1  63 Female
+## sample7    Control2  49 Female
+## sample8    Control3  53 Female
+## sample9    Control4  62 Female
+## sample10   Control5  44 Female</code></pre>
+<p>Tambien podemos generar subsets más pequeños a partir de nuestro objeto Expression Set y gracias a los beneficios de la clase Expression Set podemos dividir a la vez la phenoData y la assayData</p>
+<pre class="r"><code>youngExpSet &lt;- myExpSet[,pData(myExpSet)$age&lt;50]
+
+head(pData(youngExpSet))</code></pre>
+<pre><code>##               group age    sex
+## sample2  Treatment2  42 Female
+## sample3  Treatment3  49   Male
+## sample4  Treatment4  48 Female
+## sample7    Control2  49 Female
+## sample10   Control5  44 Female</code></pre>
+</div>
+<div id="geoquery-set" class="section level3">
+<h3>GEOquery Set<a name="Geo"></a></h3>
+</div>
 </div>
 
 

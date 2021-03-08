@@ -7,6 +7,7 @@ output: html_document
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+library(Biobase)
 ```
 
 -----------
@@ -22,6 +23,8 @@ knitr::opts_chunk$set(echo = TRUE)
     5. [Enlace](#Enlace)
     6. [Comentarios](#Coment)
 2. [INFO](#Info)
+    1. [Expression Set](#Expression)
+    2. [GEOquery](#Geo)
 
 
 -----------
@@ -56,3 +59,110 @@ https://doi.org/10.1080/21655979.2020.1860479
 
 # Parte 2 - INFO<a name="Info"></a>
 
+### Expression Set<a name="Expression"></a>
+
+La clase **Expression Set** del paquete Biobase utiliza la programación orientada a objetos para procesar de manera más eficiente los datos obtenidos en estudios de microarrays. La clase Expression Set divide estos datos en distintas porciones de pendiendo del tipo de datos:  
+
+* **assayData**: datos de expression de los experimentos de microarrays(datos obtenidos como resultado del experimento)
+
+* **phenoData**: meta datos que describen las muestras usadas en el experimento  
+
+* **featureData**: datos sobre el chip y la tecnología usada en el experimento  
+
+* **protocolData**: datos sobre el protocolo usado para el procesado de cada muestra  
+
+* **experimentData**: datos flexibles para describir el experimento  
+
+
+Vamos a crear abajo un objeto de clase Expression Set a partir de datos que nos vamos a inventar  
+Para esto vamos a generar 3 tipos de información:  
+
+* **expressionValues**: Datos de expresión de los microarrrays  
+
+```{r}
+expressionValues <- matrix(rnorm(100), nrow = 10)
+colnames(expressionValues) <- paste0("sample",1:10)
+# generamos la información aleatoria sobre los resultados de nuestro experimento de microarrays
+
+head(expressionValues)
+```
+
+* **Covariates**: Datos sobre las muestras usadas en el experimento como la edad de los pacientes o el tratamiento que reciben  
+
+```{r}
+Covariates <- data.frame(sampleNames = paste0("sample",1:10),
+                      group=c(paste0("Treatment",1:5),paste0("Control",1:5)),
+                      age = rpois(10, 50), 
+                      sex=as.factor(sample(c("Male", "Female"),10,replace=TRUE)),
+                      row.names=1)
+# generamos la información sobre nuestras muestras
+
+head(Covariates, n=10)
+```
+
+* **ExpInfo**: Información sobre el experimento que se ha realizado  
+
+```{r}
+ExpInfo=list(name="Marcos Zamora", lab="UOC WorkFromHome",
+          contact="myemail@somegoogle3rdparty.domain", abstract="Generating ExpressionSet objects")
+# generamos la información sobre nuestro experimento
+
+show(ExpInfo)
+```
+
+Una vez hemos generado toda nuestra información podemos crear un objeto de clase ExpressionSet a partir de ella. Primero vamos a añadir los resultados del estudio de microarrays
+
+```{r}
+myExpSet <- ExpressionSet(expressionValues)
+```
+
+En segundo lugar vamos a añadir la información de las muestras que hemos guardado en Covariates
+
+```{r}
+columnDesc <-  data.frame(labelDescription= c("Treatment/Control", 
+                                                "Age at disease onset", 
+                                                "Sex of patient (Male/Female"))
+myAnnotDF <- new("AnnotatedDataFrame", data=Covariates, varMetadata= columnDesc)
+# en primer lugar generamos un annotated data frame con explicaciones más claras de cada una de las columnas y con
+# los datos de Covariates
+
+myExpSet <- ExpressionSet(assayData = expressionValues, phenoData = myAnnotDF)
+```
+
+Podemos tambien añadir la información sobre los genes estudiados en forma de vector con una longitud igual a las filas de nuestra assayData y la información adicional sobre nuestro experimento
+
+```{r}
+myGenes <- paste0("Gene",10:20)
+
+myDesc <- new("MIAME", name= ExpInfo[["name"]],
+            lab= ExpInfo[["lab"]],
+            contact= ExpInfo[["contact"]] ,
+            abstract= ExpInfo[["abstract"]])
+
+myExpSet <- ExpressionSet(assayData=expressionValues,
+                        phenoData=myAnnotDF,
+                        fetureNames =myGenes,
+                        experimentData = myDesc)
+
+show(myExpSet)
+```
+
+Manipulando un objeto de clase ExpresionSet mediante los comandos **exprs()** con el que se accede a la parte de assayData del Expression Set y el comando **pData** con el que se accede a la parte de phenoData
+
+```{r}
+all(colnames(exprs(myExpSet))==rownames(pData(myExpSet)))
+
+dim(exprs(myExpSet))
+
+head(pData(myExpSet), 10)
+```
+
+Tambien podemos generar subsets más pequeños a partir de nuestro objeto Expression Set y gracias a los beneficios de la clase Expression Set podemos dividir a la vez la phenoData y la assayData
+
+```{r}
+youngExpSet <- myExpSet[,pData(myExpSet)$age<50]
+
+head(pData(youngExpSet))
+```
+
+### GEOquery Set<a name="Geo"></a>
